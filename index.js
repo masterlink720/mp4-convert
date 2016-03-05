@@ -16,6 +16,8 @@ Mp4Convert.prototype.add_ffmpeg_flag = function () {
     if(!arguments.length) return;
 
     this.user_flags = this.user_flags.concat( Array.prototype.slice.call(arguments, 0));
+
+    return this;
 };
 
 Mp4Convert.prototype.start = function() {
