@@ -5,12 +5,21 @@ var util = require('util');
 var Mp4Convert = function(input, output) {
 	this.input = input;
 	this.output = output;
+
+	this.user_flags = [];
 };
 util.inherits(Mp4Convert, events.EventEmitter);
 
 
+Mp4Convert.prototype.add_ffmpeg_flag = function () {
+    // Ignore
+    if(!arguments.length) return;
+
+    this.user_flags = this.user_flags.concat( Array.prototype.slice.call(arguments, 0));
+};
+
 Mp4Convert.prototype.start = function() {
-	var ffprobe = util.format('ffprobe -hide_banner -print_format json -show_format -show_streams "%s"', this.input);
+	var ffprobe = `ffprobe -hide_banner -print_format json -show_format -show_streams ${this.user_flags.join(' ')} "${this.input}"`;
 	// When outputting to json, you have to opt in to each piece of info.
 	this.emit('ffprobeCommand', ffprobe);
 	child_process.exec(ffprobe, (function(error, stdout, stderr) {
@@ -21,7 +30,7 @@ Mp4Convert.prototype.start = function() {
 		this.emit('ffprobeOutput', this.ffprobeJson);
 		return this.ffmpeg();
 	}).bind(this));	
-}
+};
 
 
 
